@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡车-无人机协同配送优化系统</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-brand">
+                <div class="topbar-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="3" width="15" height="13" rx="1"/>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                        <circle cx="5.5" cy="18.5" r="2.5"/>
+                        <circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
+                </div>
+                <span class="topbar-title">DroneTruckGA<span> | 配送优化</span></span>
+                <div class="status-indicator" id="statusIndicator" title="系统就绪"></div>
+            </div>
+            <div class="topbar-actions">
+                <select id="theme-select" class="topbar-select">
+                    <option value="auto">跟随系统</option>
+                    <option value="dark">深色</option>
+                    <option value="light">浅色</option>
+                </select>
+                <select id="solomon-select" class="topbar-select">
+                    <option value="">-- Solomon算例 --</option>
+                    <option value="C101" selected>C101 聚类型</option>
+                    <option value="C201">C201 聚类宽时间窗</option>
+                    <option value="R101">R101 随机型</option>
+                    <option value="R201">R201 随机宽时间窗</option>
+                    <option value="RC101">RC101 混合型</option>
+                    <option value="RC201">RC201 混合宽时间窗</option>
+                </select>
+                <button class="topbar-btn" id="btn-import" title="加载配置">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    加载
+                </button>
+                <button class="topbar-btn" id="btn-export" title="保存配置">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    保存
+                </button>
+                <button class="topbar-btn topbar-btn--run" id="btn-start" title="开始运行GA优化">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    开始运行
+                </button>
+                <button class="topbar-btn topbar-btn--stop" id="btn-stop" title="停止运行" style="display:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="4" width="4" height="16"/>
+                        <rect x="14" y="4" width="4" height="16"/>
+                    </svg>
+                    停止
+                </button>
+                <button class="topbar-btn" id="btn-reset" title="重置">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                        <path d="M21 3v5h-5"/>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                        <path d="M3 21v-5h5"/>
+                    </svg>
+                </button>
+            </div>
+            <input type="file" id="file-import" accept=".json" style="display:none">
+        </header>
+
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">问题配置</div>
+                <div class="sidebar-item sidebar-item--active" data-page="customer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="7" r="4"/>
+                        <path d="M5.5 21v-2a4 4 0 0 1 4-4h5a4 4 0 0 1 4 4v2"/>
+                    </svg>
+                    客户管理
+                </div>
+                <div class="sidebar-item" data-page="depot">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                    </svg>
+                    仓库管理
+                </div>
+                <div class="sidebar-item" data-page="truck">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="3" width="15" height="13"/>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                        <circle cx="5.5" cy="18.5" r="2.5"/>
+                        <circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
+                    卡车参数
+                </div>
+                <div class="sidebar-item" data-page="drone">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 22h20L12 2z"/>
+                        <circle cx="12" cy="14" r="2"/>
+                        <line x1="12" y1="10" x2="12" y2="6"/>
+                    </svg>
+                    无人机参数
+                </div>
+                <div class="sidebar-item" data-page="launch">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polygon points="12 6 12 12 16 14"/>
+                    </svg>
+                    发射点配置
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">算法配置</div>
+                <div class="sidebar-item" data-page="ga">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                    </svg>
+                    GA 参数
+                </div>
+                <div class="sidebar-item" data-page="penalty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    惩罚参数
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">结果分析</div>
+                <div class="sidebar-item" data-page="result">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                    </svg>
+                    收敛曲线
+                </div>
+                <div class="sidebar-item" data-page="plan">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    配送方案
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Map -->
+            <div class="map-container" id="map-container">
+                <canvas id="map-canvas"></canvas>
+                <div class="map-legend">
+                    <div class="map-legend-item"><span class="map-legend-dot map-legend-dot--depot"></span> 仓库</div>
+                    <div class="map-legend-item"><span class="map-legend-dot map-legend-dot--customer"></span> 客户</div>
+                    <div class="map-legend-item"><span class="map-legend-dot map-legend-dot--launch"></span> 发射点</div>
+                    <div class="map-legend-item"><span class="map-legend-line map-legend-line--truck"></span> 卡车路线</div>
+                    <div class="map-legend-item"><span class="map-legend-line map-legend-line--drone"></span> 无人机路线</div>
+                </div>
+                <div class="map-controls">
+                    <button class="map-ctrl-btn" id="btn-zoom-in" title="放大">+</button>
+                    <button class="map-ctrl-btn" id="btn-zoom-out" title="缩小">-</button>
+                    <button class="map-ctrl-btn" id="btn-zoom-reset" title="重置">R</button>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon--depot">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="footer-depots">1</span>
+                        <span class="stat-label">仓库数</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon--customer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a4 4 0 0 1 4-4h5a4 4 0 0 1 4 4v2"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="footer-customers">0</span>
+                        <span class="stat-label">客户数</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon--truck">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="footer-trucks">6</span>
+                        <span class="stat-label">卡车数</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon--drone">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 22h20L12 2z"/><circle cx="12" cy="14" r="2"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="footer-drones">24</span>
+                        <span class="stat-label">无人机数</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon--time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-best-time">--</span>
+                        <span class="stat-label">最优时间 (min)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form / Chart -->
+            <div class="card" id="form-container">
+                <!-- Customer Page -->
+                <div class="page active" id="page-customer">
+                    <div class="card-header">
+                        <span class="card-title">客户管理</span>
+                        <span class="card-badge">100客户</span>
+                    </div>
+                    <div class="table-container">
+                        <table id="customer-table">
+                            <thead>
+                                <tr><th>ID</th><th>X</th><th>Y</th><th>需求</th><th>时间窗</th><th>操作</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:12px;">
+                        <button id="btn-generate-customers" class="btn btn-secondary">随机生成</button>
+                        <button id="btn-add-customer" class="btn btn-secondary">添加客户</button>
+                    </div>
+                </div>
+
+                <!-- Depot Page -->
+                <div class="page" id="page-depot">
+                    <div class="card-header">
+                        <span class="card-title">仓库管理</span>
+                    </div>
+                    <div id="depot-list"></div>
+                    <button id="btn-add-depot" class="btn btn-secondary" style="margin-top:12px;">添加仓库</button>
+                </div>
+
+                <!-- Truck Page -->
+                <div class="page" id="page-truck">
+                    <div class="card-header">
+                        <span class="card-title">卡车参数</span>
+                    </div>
+                    <div class="param-grid">
+                        <div class="param-group"><label class="param-label">卡车数量</label><input type="number" id="truck-count" class="param-input" value="6"></div>
+                        <div class="param-group"><label class="param-label">载重 (kg)</label><input type="number" id="truck-capacity" class="param-input" value="2000"></div>
+                        <div class="param-group"><label class="param-label">速度 (km/h)</label><input type="number" id="truck-speed" class="param-input" value="40"></div>
+                        <div class="param-group"><label class="param-label">每车无人机数</label><input type="number" id="truck-drones" class="param-input" value="4"></div>
+                        <div class="param-group"><label class="param-label">最大续航 (km)</label><input type="number" id="truck-range" class="param-input" value="1000"></div>
+                    </div>
+                </div>
+
+                <!-- Drone Page -->
+                <div class="page" id="page-drone">
+                    <div class="card-header">
+                        <span class="card-title">无人机参数</span>
+                    </div>
+                    <div class="param-group" style="margin-bottom:12px;">
+                        <label class="param-label">无人机总数 = 卡车数 x 每车无人机数</label>
+                        <input type="text" id="drone-count" class="param-input" readonly value="24">
+                    </div>
+                    <div class="param-grid">
+                        <div class="param-group"><label class="param-label">续航 (km)</label><input type="number" id="drone-range" class="param-input" value="50"></div>
+                        <div class="param-group"><label class="param-label">速度 (km/h)</label><input type="number" id="drone-speed" class="param-input" value="60"></div>
+                        <div class="param-group"><label class="param-label">最大载重 (kg)</label><input type="number" id="drone-payload" class="param-input" value="50"></div>
+                        <div class="param-group"><label class="param-label">充电时间 (min)</label><input type="number" id="drone-recharge-time" class="param-input" value="10"></div>
+                        <div class="param-group"><label class="param-label">服务时间 (min)</label><input type="number" id="drone-service-time" class="param-input" step="0.1" value="1.5"></div>
+                    </div>
+                </div>
+
+                <!-- Launch Point Page -->
+                <div class="page" id="page-launch">
+                    <div class="card-header">
+                        <span class="card-title">发射点配置</span>
+                    </div>
+                    <div class="param-grid">
+                        <div class="param-group"><label class="param-label">发射点数量 (0=自动)</label><input type="number" id="launch-count" class="param-input" value="10"></div>
+                        <div class="param-group"><label class="param-label">变异范围 (km)</label><input type="number" id="launch-mutation-range" class="param-input" step="0.1" value="3"></div>
+                        <div class="param-group"><label class="param-label">历史影响系数</label><input type="number" id="launch-history-influence" class="param-input" step="0.1" value="0.5"></div>
+                        <div class="param-group"><label class="param-label">K-means最大迭代</label><input type="number" id="launch-kmeans-iter" class="param-input" value="100"></div>
+                    </div>
+                </div>
+
+                <!-- GA Page -->
+                <div class="page" id="page-ga">
+                    <div class="card-header">
+                        <span class="card-title">遗传算法参数</span>
+                    </div>
+                    <div class="param-grid">
+                        <div class="param-group"><label class="param-label">种群规模</label><input type="number" id="ga-population" class="param-input" value="10000"></div>
+                        <div class="param-group"><label class="param-label">最大迭代次数</label><input type="number" id="ga-generations" class="param-input" value="2500"></div>
+                        <div class="param-group"><label class="param-label">交叉率</label><input type="number" id="ga-crossover" class="param-input" step="0.01" value="0.9"></div>
+                        <div class="param-group"><label class="param-label">变异率</label><input type="number" id="ga-mutation" class="param-input" step="0.01" value="0.7"></div>
+                        <div class="param-group"><label class="param-label">精英率</label><input type="number" id="ga-elite" class="param-input" step="0.01" value="0.5"></div>
+                        <div class="param-group"><label class="param-label">锦标赛规模</label><input type="number" id="ga-tournament" class="param-input" value="2"></div>
+                    </div>
+                </div>
+
+                <!-- Penalty Page -->
+                <div class="page" id="page-penalty">
+                    <div class="card-header">
+                        <span class="card-title">惩罚参数</span>
+                    </div>
+                    <div class="param-group" style="margin-bottom:12px;">
+                        <label class="param-label"><input type="checkbox" id="penalty-enabled" checked> 启用惩罚机制</label>
+                    </div>
+                    <div class="param-grid">
+                        <div class="param-group"><label class="param-label">早到惩罚权重</label><input type="number" id="penalty-early" class="param-input" step="0.1" value="2.0"></div>
+                        <div class="param-group"><label class="param-label">晚到惩罚权重</label><input type="number" id="penalty-late" class="param-input" step="0.1" value="50.0"></div>
+                        <div class="param-group"><label class="param-label">无人机续航惩罚</label><input type="number" id="penalty-drone-range" class="param-input" step="0.1" value="50.0"></div>
+                        <div class="param-group"><label class="param-label">无人机载重惩罚</label><input type="number" id="penalty-drone-payload" class="param-input" step="0.1" value="20.0"></div>
+                        <div class="param-group"><label class="param-label">卡车续航惩罚</label><input type="number" id="penalty-truck-time" class="param-input" step="0.1" value="5.0"></div>
+                        <div class="param-group"><label class="param-label">距离惩罚权重</label><input type="number" id="penalty-distance" class="param-input" step="0.1" value="50.0"></div>
+                    </div>
+                </div>
+
+                <!-- Result Chart Page -->
+                <div class="page" id="page-result">
+                    <div class="card-header">
+                        <span class="card-title">时间收敛曲线</span>
+                        <span class="card-badge" id="result-iterations">0 次迭代</span>
+                    </div>
+                    <div class="result-summary">
+                        <div class="result-card"><div class="result-label">最优配送时间</div><div class="result-value" id="result-time">-- min</div></div>
+                        <div class="result-card"><div class="result-label">迭代次数</div><div class="result-value" id="result-iter">--</div></div>
+                        <div class="result-card"><div class="result-label">运行耗时</div><div class="result-value" id="result-duration">-- s</div></div>
+                    </div>
+                    <canvas id="chart-canvas"></canvas>
+                </div>
+
+                <!-- Plan Page -->
+                <div class="page" id="page-plan">
+                    <div class="card-header">
+                        <span class="card-title">配送方案</span>
+                    </div>
+                    <div id="plan-content"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Panel (Console) -->
+        <aside class="right-panel">
+            <div class="right-panel-header">
+                <span class="right-panel-title">控制台输出</span>
+                <button id="btn-console-clear" class="btn-icon" title="清空">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="console-content" id="console-content"></div>
+        </aside>
+
+        <!-- Statusbar -->
+        <footer class="statusbar">
+            <div class="statusbar-left">
+                <span class="statusbar-dot" id="statusbar-dot"></span>
+                <span id="footer-status">就绪</span>
+                <span class="statusbar-sep">|</span>
+                <span>仓库:<strong id="statusbar-depots">1</strong></span>
+                <span>客户:<strong id="statusbar-customers">0</strong></span>
+                <span>卡车:<strong id="statusbar-trucks">6</strong></span>
+                <span>无人机:<strong id="statusbar-drones">24</strong></span>
+            </div>
+            <div class="statusbar-center">
+                <span>迭代: <strong id="footer-iteration">0/0</strong></span>
+            </div>
+            <div class="statusbar-right">
+                <span>最优时间: <strong id="statusbar-time">-- min</strong></span>
+                <span class="statusbar-sep">|</span>
+                <span>DroneTruckGA v4.2</span>
+            </div>
+        </footer>
+
+        <div class="copyright">
+            &copy; 2026 Sweizh. All Rights Reserved. Powered by OpenCode &amp; MiMo-V2.5-Pro
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/solomon.js"></script>
+    <script src="js/problem.js"></script>
+    <script src="js/ga.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
