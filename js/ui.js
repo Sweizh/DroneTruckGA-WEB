@@ -6,11 +6,12 @@ class UIManager {
     constructor() {
         this.currentPage = 'customer';
         this.onPageChange = null;
-        
+
         this.initNavigation();
+        this.initMobileNav();
         this.initTheme();
     }
-    
+
     initNavigation() {
         document.querySelectorAll('.sidebar-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -18,6 +19,38 @@ class UIManager {
                 if (page) this.navigateTo(page);
             });
         });
+    }
+
+    initMobileNav() {
+        const tabbar = document.getElementById('mobile-tabbar');
+        if (tabbar) {
+            tabbar.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.dataset.page;
+                    if (page) this.navigateTo(page);
+                });
+            });
+        }
+
+        const consoleToggle = document.getElementById('btn-console-toggle');
+        const rightPanel = document.querySelector('.right-panel');
+        const backdrop = document.getElementById('drawer-backdrop');
+
+        const closeDrawer = () => {
+            if (rightPanel) rightPanel.classList.remove('right-panel--open');
+            if (backdrop) backdrop.classList.remove('drawer-backdrop--visible');
+        };
+
+        if (consoleToggle && rightPanel && backdrop) {
+            consoleToggle.addEventListener('click', () => {
+                const isOpen = rightPanel.classList.toggle('right-panel--open');
+                backdrop.classList.toggle('drawer-backdrop--visible', isOpen);
+            });
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener('click', closeDrawer);
+        }
     }
     
     initTheme() {
@@ -39,13 +72,17 @@ class UIManager {
         document.querySelectorAll('.sidebar-item').forEach(item => {
             item.classList.toggle('sidebar-item--active', item.dataset.page === page);
         });
-        
+
+        document.querySelectorAll('.mobile-tabbar button').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.page === page);
+        });
+
         document.querySelectorAll('.page').forEach(p => {
             p.classList.toggle('active', p.id === `page-${page}`);
         });
-        
+
         this.currentPage = page;
-        
+
         if (this.onPageChange) {
             this.onPageChange(page);
         }
