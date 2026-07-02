@@ -47,7 +47,7 @@
       </select>
 
       <!-- Import -->
-      <button class="btn-secondary" @click="triggerImport" title="加载配置">
+      <button class="btn-secondary shrink-0 whitespace-nowrap" @click="triggerImport" title="加载配置">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <polyline points="17 8 12 3 7 8" />
@@ -64,7 +64,7 @@
       />
 
       <!-- Export -->
-      <button class="btn-secondary" @click="emit('export')" title="保存配置">
+      <button class="btn-secondary shrink-0 whitespace-nowrap" @click="emit('export')" title="保存配置">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <polyline points="7 10 12 15 17 10" />
@@ -74,13 +74,13 @@
       </button>
 
       <!-- Start / Stop -->
-      <button v-if="!isRunning" class="btn-primary" @click="emit('start')">
+      <button v-if="!isRunning" class="btn-primary shrink-0 whitespace-nowrap" @click="emit('start')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <polygon points="5 3 19 12 5 21 5 3" />
         </svg>
         <span class="hidden sm:inline">开始运行</span>
       </button>
-      <button v-else class="btn-danger" @click="emit('stop')">
+      <button v-else class="btn-danger shrink-0 whitespace-nowrap" @click="emit('stop')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <rect x="5" y="5" width="14" height="14" rx="1" />
         </svg>
@@ -88,7 +88,7 @@
       </button>
 
       <!-- Reset -->
-      <button class="btn-ghost" @click="emit('reset')" title="重置">
+      <button class="btn-ghost shrink-0" @click="emit('reset')" title="重置">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="1 4 1 10 7 10" />
           <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
@@ -96,7 +96,7 @@
       </button>
 
       <!-- Console toggle (mobile/tablet only) -->
-      <button class="btn-ghost lg:hidden" @click="emit('toggle-console')" title="控制台">
+      <button class="btn-ghost shrink-0 lg:hidden" @click="emit('toggle-console')" title="控制台">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="4 17 10 11 4 5" />
           <line x1="12" y1="19" x2="20" y2="19" />

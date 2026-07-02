@@ -110,10 +110,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 10px;
   font-weight: 600;
   font-size: 0.875rem;
+  white-space: nowrap;
   background: linear-gradient(135deg, #3b82f6, #06b6d4);
   color: white;
   transition: all 0.2s;
@@ -133,10 +134,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 10px;
   font-weight: 500;
   font-size: 0.875rem;
+  white-space: nowrap;
   background: var(--bg-tertiary);
   color: var(--text-primary);
   border: 1px solid var(--border-primary);
@@ -152,10 +154,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 10px;
   font-weight: 600;
   font-size: 0.875rem;
+  white-space: nowrap;
   background: linear-gradient(135deg, #f43f5e, #fb923c);
   color: white;
   transition: all 0.2s;
@@ -172,7 +175,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px;
+  padding: 6px;
   border-radius: 10px;
   color: var(--text-secondary);
   transition: all 0.2s;
