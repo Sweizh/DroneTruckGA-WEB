@@ -1,0 +1,293 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==================== CSS Variables (Theme Tokens) ==================== */
+:root {
+  --bg-primary: #020617;
+  --bg-secondary: #0f172a;
+  --bg-tertiary: #1e293b;
+  --bg-card: rgba(15, 23, 42, 0.6);
+  --bg-input: #0f172a;
+  --bg-hover: rgba(51, 65, 85, 0.5);
+
+  --border-primary: rgba(51, 65, 85, 0.6);
+  --border-secondary: rgba(71, 85, 105, 0.8);
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-orange: #fb923c;
+
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+html:not(.dark) {
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #e2e8f0;
+  --bg-tertiary: #cbd5e1;
+  --bg-card: rgba(255, 255, 255, 0.7);
+  --bg-input: #ffffff;
+  --bg-hover: rgba(241, 245, 249, 0.8);
+
+  --border-primary: rgba(203, 213, 225, 0.8);
+  --border-secondary: rgba(148, 163, 184, 0.6);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ==================== Base Styles ==================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-secondary) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-secondary);
+  border-radius: 3px;
+}
+
+body {
+  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+/* ==================== Glass Card ==================== */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-card);
+}
+
+/* ==================== Input Styles ==================== */
+.input-field {
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* ==================== Button Styles ==================== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  color: white;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-secondary);
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  background: linear-gradient(135deg, #f43f5e, #fb923c);
+  color: white;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+}
+
+.btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.4);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ==================== Status Indicator ==================== */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+  box-shadow: 0 0 8px var(--accent-emerald);
+}
+
+.status-dot--running {
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+  animation: breathe 1.5s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+/* ==================== Progress Bar ==================== */
+.progress-track {
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4, #3b82f6);
+  background-size: 200% 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  animation: shimmer 2.4s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ==================== Page Transition ==================== */
+.page-enter-active {
+  transition: all 0.3s ease;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* ==================== Scrollbar for Console ==================== */
+.console-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-secondary) transparent;
+}
+
+/* ==================== ECharts Container ==================== */
+.echarts-container {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+}
+
+/* ==================== Table Styles ==================== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.data-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-secondary);
+}
+
+.data-table th {
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.data-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-secondary);
+}
+
+.data-table tbody tr:hover td {
+  background: var(--bg-hover);
+}
+
+/* Mobile touch targets */
+@media (max-width: 767px) {
+  .data-table th,
+  .data-table td {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+}
