@@ -10,8 +10,38 @@ class App {
         this.chartCanvas = new ChartCanvas('chart-canvas');
         this.ga = null;
         this.timeCurveData = [];
-        
+
+        // 渲染调度状态：将同一帧内多次到达的 route/timeCurve 合并为一次渲染
+        this._pendingRoute = null;
+        this._pendingTimeCurve = null;
+        this._renderScheduled = false;
+
         this.init();
+    }
+
+    /**
+     * 合并调度：保留最新 payload，每帧最多渲染一次。
+     * worker 每 5 代 postMessage 一次 route/timeCurve，仍可能在一帧内
+     * 先后到达两个回调；此方法确保两者被合并到同一次 rAF 中处理。
+     */
+    scheduleRender() {
+        if (this._renderScheduled) return;
+        this._renderScheduled = true;
+        requestAnimationFrame(() => {
+            this._renderScheduled = false;
+            if (this._pendingRoute) {
+                this.updateMapWithSolution(this._pendingRoute);
+                this._pendingRoute = null;
+            }
+            if (this._pendingTimeCurve) {
+                this.timeCurveData = this._pendingTimeCurve;
+                if (this.ui.currentPage === 'result') {
+                    this.chartCanvas.resize();
+                    this.chartCanvas.setData(this._pendingTimeCurve);
+                }
+                this._pendingTimeCurve = null;
+            }
+        });
     }
     
     init() {
@@ -222,18 +252,15 @@ class App {
         };
         
         this.ga.onRouteUpdate = (solution) => {
-            this.updateMapWithSolution(solution);
+            // 合并到帧调度：保留最新 route，避免一帧内多次重绘地图
+            this._pendingRoute = solution;
+            this.scheduleRender();
         };
-        
+
         this.ga.onTimeCurveUpdate = (timeCurve) => {
-            this.timeCurveData = timeCurve;
-            if (this.ui.currentPage === 'result') {
-                // 延迟渲染，确保 canvas 已经正确获取父容器尺寸
-                requestAnimationFrame(() => {
-                    this.chartCanvas.resize();
-                    this.chartCanvas.setData(timeCurve);
-                });
-            }
+            // 合并到帧调度：保留最新 timeCurve，避免每 5 代都触发 resize+setData
+            this._pendingTimeCurve = timeCurve;
+            this.scheduleRender();
         };
         
         this.ga.onComplete = (result) => {
@@ -249,8 +276,18 @@ class App {
         document.getElementById('footer-status').style.color = 'var(--accent)';
         document.getElementById('statusIndicator').className = 'status-indicator status-indicator--running';
         document.getElementById('statusbar-dot').className = 'statusbar-dot statusbar-dot--running';
-        
-        await this.ga.run();
+
+        try {
+            await this.ga.run();
+        } catch (err) {
+            // Worker 异常（或 'error' 消息）：记录日志并恢复按钮/状态
+            this.ui.addLog('GA 运行错误: ' + (err && err.message ? err.message : err), 'error');
+            document.getElementById('btn-start').style.display = 'flex';
+            document.getElementById('btn-stop').style.display = 'none';
+            document.getElementById('statusIndicator').className = 'status-indicator';
+            document.getElementById('statusbar-dot').className = 'statusbar-dot';
+            this.ui.setStatus('就绪');
+        }
     }
     
     stopGA() {

@@ -46,7 +46,7 @@
                         <polyline points="7 10 12 15 17 10"/>
                         <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
-                    加载
+                    <span>加载</span>
                 </button>
                 <button class="topbar-btn" id="btn-export" title="保存配置">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -54,20 +54,26 @@
                         <polyline points="17 21 17 13 7 13 7 21"/>
                         <polyline points="7 3 7 8 15 8"/>
                     </svg>
-                    保存
+                    <span>保存</span>
                 </button>
                 <button class="topbar-btn topbar-btn--run" id="btn-start" title="开始运行GA优化">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="5 3 19 12 5 21 5 3"/>
                     </svg>
-                    开始运行
+                    <span>开始运行</span>
                 </button>
                 <button class="topbar-btn topbar-btn--stop" id="btn-stop" title="停止运行" style="display:none;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="6" y="4" width="4" height="16"/>
                         <rect x="14" y="4" width="4" height="16"/>
                     </svg>
-                    停止
+                    <span>停止</span>
+                </button>
+                <button class="topbar-btn topbar-btn--console" id="btn-console-toggle" title="控制台">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 17 10 11 4 5"/>
+                        <line x1="12" y1="19" x2="20" y2="19"/>
+                    </svg>
                 </button>
                 <button class="topbar-btn" id="btn-reset" title="重置">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -362,6 +368,9 @@
             </div>
         </main>
 
+        <!-- Drawer Backdrop (tablet/mobile) -->
+        <div class="drawer-backdrop" id="drawer-backdrop"></div>
+
         <!-- Right Panel (Console) -->
         <aside class="right-panel">
             <div class="right-panel-header">
@@ -401,6 +410,77 @@
         <div class="copyright">
             &copy; 2026 Sweizh. All Rights Reserved. Powered by OpenCode &amp; MiMo-V2.5-Pro
         </div>
+
+        <!-- Mobile Tab Bar -->
+        <nav class="mobile-tabbar" id="mobile-tabbar">
+            <button data-page="customer" title="客户管理">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="7" r="4"/>
+                    <path d="M5.5 21v-2a4 4 0 0 1 4-4h5a4 4 0 0 1 4 4v2"/>
+                </svg>
+                <span>客户</span>
+            </button>
+            <button data-page="depot" title="仓库管理">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <line x1="3" y1="9" x2="21" y2="9"/>
+                </svg>
+                <span>仓库</span>
+            </button>
+            <button data-page="truck" title="卡车参数">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="3" width="15" height="13"/>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+                <span>卡车</span>
+            </button>
+            <button data-page="drone" title="无人机参数">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 22h20L12 2z"/>
+                    <circle cx="12" cy="14" r="2"/>
+                    <line x1="12" y1="10" x2="12" y2="6"/>
+                </svg>
+                <span>无人机</span>
+            </button>
+            <button data-page="launch" title="发射点配置">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polygon points="12 6 12 12 16 14"/>
+                </svg>
+                <span>发射</span>
+            </button>
+            <button data-page="ga" title="GA参数">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <span>GA</span>
+            </button>
+            <button data-page="penalty" title="惩罚参数">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>惩罚</span>
+            </button>
+            <button data-page="result" title="收敛曲线">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <span>曲线</span>
+            </button>
+            <button data-page="plan" title="配送方案">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span>方案</span>
+            </button>
+        </nav>
     </div>
 
     <script src="js/config.js"></script>
