@@ -282,6 +282,32 @@ function buildOption() {
     })
   }
 
+  // 计算保持坐标比例的 grid（防止容器变宽时图形横向拉伸）
+  const rangeX = maxX - minX
+  const rangeY = maxY - minY
+  const containerWidth = chartRef.value?.clientWidth || 300
+  const containerHeight = chartRef.value?.clientHeight || 300
+  const padding = 10
+  let gridLeft = padding, gridRight = padding, gridTop = padding, gridBottom = padding
+
+  if (rangeX > 0 && rangeY > 0) {
+    const dataAspect = rangeX / rangeY
+    const containerAspect = (containerWidth - 2 * padding) / (containerHeight - 2 * padding)
+    if (dataAspect > containerAspect) {
+      // 数据更宽，以宽度为准，上下留白
+      const plotHeight = (containerWidth - 2 * padding) / dataAspect
+      const extra = (containerHeight - plotHeight) / 2
+      gridTop = Math.max(padding, extra)
+      gridBottom = Math.max(padding, extra)
+    } else {
+      // 数据更高，以高度为准，左右留白
+      const plotWidth = (containerHeight - 2 * padding) * dataAspect
+      const extra = (containerWidth - plotWidth) / 2
+      gridLeft = Math.max(padding, extra)
+      gridRight = Math.max(padding, extra)
+    }
+  }
+
   return {
     backgroundColor: 'transparent',
     animation: false,
@@ -296,10 +322,10 @@ function buildOption() {
       },
     },
     grid: {
-      left: 10,
-      right: 10,
-      top: 10,
-      bottom: 10,
+      left: gridLeft,
+      right: gridRight,
+      top: gridTop,
+      bottom: gridBottom,
       containLabel: false,
     },
     xAxis: {
@@ -384,6 +410,7 @@ onMounted(() => {
 
       resizeObserver = new ResizeObserver(() => {
         chart?.resize()
+        renderChart()
       })
       resizeObserver.observe(chartRef.value)
     }
