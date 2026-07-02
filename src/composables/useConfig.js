@@ -15,10 +15,22 @@ export function useConfig() {
     drones: state.config.vehicles.trucks.count * state.config.vehicles.trucks.dronesPerTruck,
   }))
 
+  /** 原地替换 config 内容，保持响应式引用不变（避免 state.config = newObj 导致旧引用失效） */
+  function applyConfig(config) {
+    state.config.problem.depots.splice(0, state.config.problem.depots.length, ...config.problem.depots)
+    state.config.problem.customers.splice(0, state.config.problem.customers.length, ...config.problem.customers)
+    Object.assign(state.config.vehicles.trucks, config.vehicles.trucks)
+    Object.assign(state.config.vehicles.drones, config.vehicles.drones)
+    Object.assign(state.config.launchPoint, config.launchPoint)
+    Object.assign(state.config.genetic, config.genetic)
+    Object.assign(state.config.penalty, config.penalty)
+    Object.assign(state.config.normalization, config.normalization)
+  }
+
   function loadSolomon(name) {
     const config = loadSolomonInstance(name)
     if (config) {
-      state.config = config
+      applyConfig(config)
       return true
     }
     return false
@@ -26,7 +38,7 @@ export function useConfig() {
 
   function importConfigFromJSON(json) {
     const config = loadConfigFromJSON(json)
-    state.config = config
+    applyConfig(config)
   }
 
   function exportCurrentConfig() {

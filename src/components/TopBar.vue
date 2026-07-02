@@ -115,7 +115,7 @@ defineProps({
 
 const emit = defineEmits(['start', 'stop', 'reset', 'import', 'export', 'load-solomon', 'toggle-console'])
 
-const solomonList = ['C101', 'C201', 'R101', 'RC201', 'RC101', 'RC201']
+const solomonList = ['C101', 'C201', 'R101', 'R201', 'RC101', 'RC201']
 const solomon = ref('C101')
 const theme = ref('auto')
 const fileInput = ref(null)

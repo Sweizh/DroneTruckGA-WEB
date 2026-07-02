@@ -17,21 +17,21 @@
       <!-- Sidebar (desktop) -->
       <Sidebar :active-page="activePage" @navigate="navigateTo" class="hidden md:flex" />
 
-      <!-- Center: Map + Stats + Page Content -->
-      <main class="flex-1 flex flex-col overflow-hidden p-2.5 gap-2.5 min-w-0">
-        <!-- Map -->
-        <MapView
-          :depots="config.problem.depots"
-          :customers="config.problem.customers"
-          :solution="gaState.routeData"
-          :customer-map="customerMap"
-        />
+      <!-- Center: Map + Stats + Page Content（整体上下滑动） -->
+      <main class="flex-1 overflow-y-auto p-2.5 min-w-0">
+        <div class="flex flex-col gap-2.5">
+          <!-- Map -->
+          <MapView
+            :depots="config.problem.depots"
+            :customers="config.problem.customers"
+            :solution="gaState.routeData"
+            :customer-map="customerMap"
+          />
 
-        <!-- Stats Bar -->
-        <StatsBar :stats="stats" :best-time="gaState.bestTime" />
+          <!-- Stats Bar -->
+          <StatsBar :stats="stats" :best-time="gaState.bestTime" />
 
-        <!-- Page Content (scrollable) -->
-        <div class="flex-1 overflow-y-auto min-h-0">
+          <!-- Page Content -->
           <KeepAlive>
             <component :is="currentPageComponent" />
           </KeepAlive>
