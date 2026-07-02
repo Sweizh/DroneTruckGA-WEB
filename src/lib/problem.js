@@ -3,7 +3,7 @@
  * 包含 K-means 聚类、肘部法则、完整的时间计算
  */
 
-class ProblemModel {
+export class ProblemModel {
     constructor(config) {
         this.config = config;
         this.depots = config.problem.depots.map(d => ({

@@ -2,7 +2,9 @@
  * Solomon 100客户算例数据
  */
 
-const SOLOMON_INSTANCES = {
+import { getDefaultConfig } from './config.js';
+
+export const SOLOMON_INSTANCES = {
     C101: {
         name: 'C101',
         description: '聚类型 窄时间窗',
@@ -659,12 +661,12 @@ const SOLOMON_INSTANCES = {
     }
 };
 
-function loadSolomonInstance(instanceName) {
+export function loadSolomonInstance(instanceName) {
     const instance = SOLOMON_INSTANCES[instanceName];
     if (!instance) return null;
-    
+
     const config = getDefaultConfig();
-    
+
     config.problem.depots = [{ ...instance.depot }];
     config.problem.customers = instance.customers.map(c => ({
         id: c.id,
@@ -675,9 +677,9 @@ function loadSolomonInstance(instanceName) {
         timeWindow: [...c.timeWindow],
         serviceTime: c.serviceTime
     }));
-    
+
     config.vehicles.trucks.count = instance.vehicleCount;
     config.vehicles.trucks.capacity = instance.vehicleCapacity;
-    
+
     return config;
 }

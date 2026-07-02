@@ -1,27 +1,15 @@
 /**
  * 遗传算法运行器 - 主线程代理
- *
- * 实际的 GA 主循环已迁移至 Web Worker (js/ga.worker.js)，以避免
- * 大种群 (10000) × 多代 (2500) 长时间运行时阻塞 UI。
- *
- * 本类仅作为主线程侧的代理：构造 Worker、转发回调、返回 Promise。
- * 保留与旧 GARunner 完全相同的回调接口 (onLog / onProgress /
- * onRouteUpdate / onTimeCurveUpdate / onComplete) 以及构造签名
- * `new GARunner(model)`，因此 js/app.js 的调用代码无需改动。
- *
- * Worker 通过相对路径 'js/ga.worker.js' 加载，便于在 GitHub Pages
- * 项目子路径下部署运行。
+ * 实际 GA 主循环在 Web Worker 中执行
  */
 
-class GARunner {
-    constructor(model) {
-        // model 仍按旧签名传入以保持 app.js 兼容；代理只需要其中的 config。
-        this.config = model ? model.config : null;
+export class GARunner {
+    constructor(config) {
+        this.config = config;
         this.worker = null;
         this.isRunning = false;
         this.shouldStop = false;
 
-        // 回调接口（与原 GARunner 保持一致）
         this.onLog = null;
         this.onProgress = null;
         this.onComplete = null;
@@ -40,8 +28,11 @@ class GARunner {
         return new Promise((resolve, reject) => {
             let worker;
             try {
-                // 相对路径，便于在 GitHub Pages 项目子路径下运行
-                worker = new Worker('js/ga.worker.js');
+                // Vite 支持的 Worker 导入方式，兼容 GitHub Pages 子路径部署
+                worker = new Worker(
+                    new URL('./ga.worker.js', import.meta.url),
+                    { type: 'module' }
+                );
             } catch (err) {
                 this.isRunning = false;
                 reject(err);
@@ -97,7 +88,6 @@ class GARunner {
                 reject(new Error(err.message || 'Worker error'));
             };
 
-            // 启动 worker：发送完整 config
             worker.postMessage({ type: 'start', config: this.config });
         });
     }
@@ -105,8 +95,6 @@ class GARunner {
     stop() {
         this.shouldStop = true;
         if (this.worker) {
-            // 仅通知 worker 停止；不在 worker 内部 terminate，
-            // 由主循环在下次 yield 后退出，并最终触发 'complete'。
             this.worker.postMessage({ type: 'stop' });
         }
     }

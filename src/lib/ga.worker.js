@@ -1113,7 +1113,7 @@ class GAOperators {
         }
     }
 
-    createNextGeneration(population, fitness, config, fitnessFunc) {
+    createNextGeneration(population, fitness, config, currentGen, maxGenerations) {
         const popSize = config.genetic.populationSize;
         const eliteCount = Math.floor(popSize * config.genetic.eliteRate);
         const tournamentSize = config.genetic.tournamentSize;
@@ -1145,11 +1145,50 @@ class GAOperators {
                 child = this.encoder.copyChromosome(parent);
             }
 
-            this.mutate(child, mutationRate, nextGen.length, popSize);
+            this.mutate(child, mutationRate, currentGen, maxGenerations);
             nextGen.push(child);
         }
 
         return nextGen;
+    }
+
+    /**
+     * 模因局部搜索（论文"改良"遗传算法核心，3.2节）
+     * 每代对最优个体的发射点坐标向其所属客户重心贪心调整，加速收敛。
+     */
+    localSearch(chrom) {
+        const customers = this.model.customers;
+        const n = this.model.getLaunchPointCount();
+        const coords = chrom.launchPointCoords;
+        if (!coords || coords.length < n * 2) return;
+
+        // 收集每个发射点所属客户
+        const lpCustomers = Array.from({ length: n }, () => []);
+        for (let i = 0; i < customers.length; i++) {
+            const lpId = chrom.customerBlocks[i];
+            if (lpId >= 1 && lpId <= n) lpCustomers[lpId - 1].push(customers[i]);
+        }
+
+        const step = 0.5; // 向重心移动 50%
+        const minX = this.model.minX, maxX = this.model.maxX;
+        const minY = this.model.minY, maxY = this.model.maxY;
+
+        for (let lp = 0; lp < n; lp++) {
+            const custs = lpCustomers[lp];
+            if (custs.length === 0) continue;
+            let cx = 0, cy = 0;
+            for (const c of custs) { cx += c.x; cy += c.y; }
+            cx /= custs.length; cy /= custs.length;
+
+            const oldX = coords[lp * 2];
+            const oldY = coords[lp * 2 + 1];
+            let newX = oldX + (cx - oldX) * step;
+            let newY = oldY + (cy - oldY) * step;
+            newX = Math.max(minX, Math.min(maxX, newX));
+            newY = Math.max(minY, Math.min(maxY, newY));
+            coords[lp * 2] = Math.round(newX * 1000) / 1000;
+            coords[lp * 2 + 1] = Math.round(newY * 1000) / 1000;
+        }
     }
 }
 
@@ -1236,11 +1275,16 @@ class GARunner {
             const sortedPopulation = indices.map(i => population[i]);
             const sortedFitness = indices.map(i => fitness[i]);
 
-            // 热路径优化：每代仅对领头染色体 decode + evaluate 一次，
-            // 同时用于收敛曲线 (effectiveTime) 与最优更新 (totalTime)，
-            // 避免原实现中 bestChromosome 与 sortedPopulation[0] 各解码一次。
-            // 由于 bestChromosome 是 sortedPopulation[0] 的逐元素 slice() 拷贝，
-            // evaluate 结果完全一致，故 totalTime 数值不变。
+            // 模因局部搜索（论文"改良"GA核心，3.2节）：每代对最优个体
+            // 的发射点坐标向其所属客户重心贪心调整，加速收敛。
+            this.operators.localSearch(sortedPopulation[0]);
+            const lsFit = this.fitnessFunc.calculateFitness(sortedPopulation[0]);
+            if (lsFit > sortedFitness[0]) {
+                sortedFitness[0] = lsFit;
+                fitness[indices[0]] = lsFit;
+            }
+
+            // 领头染色体解码 + 评估，用于收敛曲线与最优更新
             const leadEval = this.fitnessFunc.evaluate(sortedPopulation[0]);
             this.timeCurve.push(leadEval.effectiveTime);
 
@@ -1251,23 +1295,23 @@ class GARunner {
                 this.bestTime = leadEval.totalTime;
             }
 
-            // 节流：每 5 代发送一次收敛曲线（跨 worker 边界）
-            if (gen % 5 === 0 && this.onTimeCurveUpdate) {
+            // 节流：每 2 代发送一次收敛曲线（实时可视化）
+            if (gen % 2 === 0 && this.onTimeCurveUpdate) {
                 this.onTimeCurveUpdate([...this.timeCurve]);
             }
 
-            // 进度回调（每 10 代，与原实现一致）
-            if (gen % 10 === 0 && this.onProgress) {
+            // 进度回调（每 5 代）
+            if (gen % 5 === 0 && this.onProgress) {
                 const progress = (gen / maxGenerations) * 100;
                 this.onProgress(progress, gen, maxGenerations, this.bestTime);
             }
 
-            if (gen % 100 === 0) {
+            if (gen % 50 === 0) {
                 this.log(`迭代 ${gen}/${maxGenerations}: 最优时间 = ${this.bestTime.toFixed(2)} min`, 'success');
             }
 
-            // 节流：每 5 代更新一次路线图（跨 worker 边界）
-            if (gen % 5 === 0 && this.onRouteUpdate && this.bestChromosome) {
+            // 节流：每 2 代更新一次路线图（实时可视化）
+            if (gen % 2 === 0 && this.onRouteUpdate && this.bestChromosome) {
                 const decodeResult = this.decoder.decode(this.bestChromosome);
                 this.onRouteUpdate({
                     launchPoints: decodeResult.allLaunchPoints,
@@ -1277,9 +1321,9 @@ class GARunner {
                 });
             }
 
-            // 创建下一代
+            // 创建下一代（传入当前代/最大代，供自适应变异使用，公式27）
             const nextGen = this.operators.createNextGeneration(
-                sortedPopulation, sortedFitness, config, this.fitnessFunc);
+                sortedPopulation, sortedFitness, config, gen, maxGenerations);
 
             population.length = 0;
             population.push(...nextGen);

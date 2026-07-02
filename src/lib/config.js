@@ -36,32 +36,32 @@ const DEFAULT_CONFIG = {
         kmeansMaxIterations: 100
     },
     genetic: {
-        populationSize: 10000,
-        maxGenerations: 2500,
+        populationSize: 100,
+        maxGenerations: 300,
         crossoverRate: 0.9,
         mutationRate: 0.7,
-        eliteRate: 0.5,
+        eliteRate: 0.3,
         tournamentSize: 2
     },
     penalty: {
         enabled: true,
         timeWindowEarly: 2.0,
-        timeWindowLate: 50.0,
+        timeWindowLate: 5.0,
         droneRangePenalty: 50.0,
         dronePayloadPenalty: 20.0,
         truckRangeTimePenalty: 5.0,
-        distancePenalty: 50.0
+        distancePenalty: 5.0
     },
     normalization: {
         maxTime: 10000.0
     }
 };
 
-function getDefaultConfig() {
+export function getDefaultConfig() {
     return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 }
 
-function loadConfigFromJSON(json) {
+export function loadConfigFromJSON(json) {
     try {
         const config = JSON.parse(json);
         return mergeConfig(getDefaultConfig(), config);
@@ -71,7 +71,7 @@ function loadConfigFromJSON(json) {
     }
 }
 
-function mergeConfig(defaultConfig, userConfig) {
+export function mergeConfig(defaultConfig, userConfig) {
     const result = JSON.parse(JSON.stringify(defaultConfig));
     
     function deepMerge(target, source) {
@@ -91,11 +91,11 @@ function mergeConfig(defaultConfig, userConfig) {
     return deepMerge(result, userConfig);
 }
 
-function exportConfig(config) {
+export function exportConfig(config) {
     return JSON.stringify(config, null, 2);
 }
 
-function generateRandomCustomers(count, depot) {
+export function generateRandomCustomers(count, depot) {
     const customers = [];
     for (let i = 1; i <= count; i++) {
         const angle = Math.random() * Math.PI * 2;

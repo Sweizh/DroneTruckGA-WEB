@@ -26,11 +26,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 纯静态站点，无需构建步骤：直接上传仓库根目录作为 Pages 产物
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: ./dist
 
       - name: Deploy to GitHub Pages
         id: deployment
