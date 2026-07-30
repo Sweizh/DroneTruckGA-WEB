@@ -69,7 +69,7 @@
         :drawer-mode="true"
         @clear="clearLogs"
         @close="consoleOpen = false"
-        class="lg:hidden fixed right-0 top-14 bottom-0 w-80 z-50"
+        class="lg:hidden fixed right-0 top-14 bottom-0 w-[85vw] max-w-sm z-50"
       />
     </div>
 

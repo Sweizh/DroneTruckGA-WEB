@@ -15,7 +15,7 @@
         class="rounded-lg p-3"
         style="background: var(--bg-secondary); border: 1px solid var(--border-primary)"
       >
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <div>
             <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">仓库ID</label>
             <input

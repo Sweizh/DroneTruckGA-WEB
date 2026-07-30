@@ -23,12 +23,12 @@
     </div>
 
     <!-- Right: Controls -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1.5 sm:gap-2">
       <!-- Theme selector -->
       <select
         v-model="theme"
         @change="onThemeChange"
-        class="input-field w-28 py-1.5 text-sm cursor-pointer hidden sm:block"
+        class="input-field w-24 py-1.5 text-sm cursor-pointer hidden md:block"
         title="主题"
       >
         <option value="auto">自动</option>
@@ -40,7 +40,7 @@
       <select
         v-model="solomon"
         @change="onSolomonChange"
-        class="input-field w-24 py-1.5 text-sm cursor-pointer"
+        class="input-field w-20 sm:w-24 py-1.5 text-sm cursor-pointer"
         title="Solomon 算例"
       >
         <option v-for="name in solomonList" :key="name" :value="name">{{ name }}</option>
@@ -53,7 +53,7 @@
           <polyline points="17 8 12 3 7 8" />
           <line x1="12" y1="3" x2="12" y2="15" />
         </svg>
-        <span class="hidden sm:inline">加载</span>
+        <span class="hidden md:inline">加载</span>
       </button>
       <input
         ref="fileInput"
@@ -70,21 +70,21 @@
           <polyline points="7 10 12 15 17 10" />
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
-        <span class="hidden sm:inline">保存</span>
+        <span class="hidden md:inline">保存</span>
       </button>
 
       <!-- Start / Stop -->
-      <button v-if="!isRunning" class="btn-primary shrink-0 whitespace-nowrap" @click="emit('start')">
+      <button v-if="!isRunning" class="btn-primary shrink-0 whitespace-nowrap" @click="emit('start')" title="开始运行">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <polygon points="5 3 19 12 5 21 5 3" />
         </svg>
-        <span class="hidden sm:inline">开始运行</span>
+        <span class="hidden md:inline">开始运行</span>
       </button>
-      <button v-else class="btn-danger shrink-0 whitespace-nowrap" @click="emit('stop')">
+      <button v-else class="btn-danger shrink-0 whitespace-nowrap" @click="emit('stop')" title="停止">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <rect x="5" y="5" width="14" height="14" rx="1" />
         </svg>
-        <span class="hidden sm:inline">停止</span>
+        <span class="hidden md:inline">停止</span>
       </button>
 
       <!-- Reset -->

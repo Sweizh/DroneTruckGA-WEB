@@ -294,3 +294,25 @@ body {
     font-size: 0.72rem;
   }
 }
+
+/* 横向可滚动表格：保留表头 sticky + 滚动阴影提示 */
+.mobile-table-scroll {
+  position: relative;
+}
+.mobile-table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-secondary);
+}
+.mobile-table-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.mobile-table-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 3px;
+}
+.mobile-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}

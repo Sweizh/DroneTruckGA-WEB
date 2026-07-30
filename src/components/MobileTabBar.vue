@@ -1,12 +1,12 @@
 <template>
   <nav
-    class="glass-card md:hidden h-14 flex overflow-x-auto rounded-none border-x-0 border-b-0 flex-shrink-0"
+    class="glass-card md:hidden h-14 flex overflow-x-auto rounded-none border-x-0 border-b-0 flex-shrink-0 relative mobile-tabbar"
     style="scrollbar-width: none"
   >
     <button
       v-for="item in tabs"
       :key="item.key"
-      class="flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 min-w-[48px] flex-shrink-0 transition-colors"
+      class="flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 min-w-[52px] flex-shrink-0 transition-colors"
       :style="{
         color: activePage === item.key ? 'var(--accent)' : 'var(--text-muted)',
         touchAction: 'manipulation',
@@ -117,5 +117,17 @@ const tabs = computed(() => [
 <style scoped>
 nav::-webkit-scrollbar {
   display: none;
+}
+/* 右侧渐变阴影提示可滑动 */
+.mobile-tabbar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 24px;
+  background: linear-gradient(to right, transparent, var(--bg-primary));
+  pointer-events: none;
+  opacity: 0.6;
 }
 </style>

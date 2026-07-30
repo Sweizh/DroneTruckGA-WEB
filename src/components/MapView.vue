@@ -1,9 +1,23 @@
 <template>
-  <div class="glass-card relative overflow-hidden" style="height: min(340px, 42vh)">
-    <div ref="chartRef" class="echarts-container"></div>
+  <div class="glass-card relative overflow-hidden transition-all" :style="{ height: collapsed ? '44px' : 'min(420px, 60vh)' }">
+    <!-- Collapse toggle -->
+    <button
+      class="absolute top-2 left-2 z-20 w-7 h-7 flex items-center justify-center rounded-md hover:bg-white/10 transition-colors"
+      style="color: var(--text-secondary)"
+      :title="collapsed ? '展开地图' : '折叠地图'"
+      @click="toggleCollapse"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :style="{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s' }">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </button>
+
+    <div v-show="!collapsed" ref="chartRef" class="echarts-container"></div>
+
+    <div v-show="!collapsed" class="absolute top-2 left-12 text-xs font-semibold pointer-events-none" style="color: var(--text-muted)">地图</div>
 
     <!-- Legend overlay -->
-    <div class="absolute top-3 right-3 glass-card px-3 py-2 text-xs space-y-1 pointer-events-none" style="border-radius: 10px">
+    <div v-show="!collapsed" class="absolute top-3 right-3 glass-card px-3 py-2 text-xs space-y-1 pointer-events-none" style="border-radius: 10px">
       <div class="flex items-center gap-2">
         <span class="w-3 h-3 rounded-sm" style="background: #f43f5e"></span>
         <span style="color: var(--text-secondary)">仓库</span>
@@ -27,7 +41,7 @@
     </div>
 
     <!-- Zoom controls -->
-    <div class="absolute bottom-3 left-3 flex flex-col gap-1">
+    <div v-show="!collapsed" class="absolute bottom-3 left-3 flex flex-col gap-1">
       <button @click="zoomIn" class="w-9 h-9 glass-card flex items-center justify-center text-lg font-bold hover:text-accent-blue transition-colors" style="border-radius: 8px">+</button>
       <button @click="zoomOut" class="w-9 h-9 glass-card flex items-center justify-center text-lg font-bold hover:text-accent-blue transition-colors" style="border-radius: 8px">−</button>
       <button @click="resetView" class="w-9 h-9 glass-card flex items-center justify-center text-xs font-bold hover:text-accent-blue transition-colors" style="border-radius: 8px">R</button>
@@ -47,9 +61,20 @@ const props = defineProps({
 })
 
 const chartRef = ref(null)
+const collapsed = ref(false)
 let chart = null
 let resizeObserver = null
 let themeObserver = null
+
+function toggleCollapse() {
+  collapsed.value = !collapsed.value
+  if (!collapsed.value) {
+    nextTick(() => {
+      chart?.resize()
+      renderChart()
+    })
+  }
+}
 
 function getThemeColors() {
   const style = getComputedStyle(document.documentElement)

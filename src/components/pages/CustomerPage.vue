@@ -8,8 +8,8 @@
       >{{ customers.length }} 客户</span>
     </div>
 
-    <div class="max-h-[400px] overflow-y-auto rounded-lg" style="background: var(--bg-secondary)">
-      <table class="data-table">
+    <div class="max-h-[400px] overflow-auto rounded-lg mobile-table-scroll" style="background: var(--bg-secondary)">
+      <table class="data-table min-w-[480px]">
         <thead>
           <tr>
             <th>ID</th>
