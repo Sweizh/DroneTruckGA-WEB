@@ -21,8 +21,6 @@ let runner = null
 let renderScheduled = false
 let pendingRoute = null
 let pendingTimeCurve = null
-let onRouteUpdateCb = null
-let onTimeCurveUpdateCb = null
 
 export function useGA() {
 
@@ -46,12 +44,10 @@ export function useGA() {
       renderScheduled = false
       if (pendingRoute) {
         state.routeData = pendingRoute
-        if (onRouteUpdateCb) onRouteUpdateCb(pendingRoute)
         pendingRoute = null
       }
       if (pendingTimeCurve) {
         state.timeCurveData = pendingTimeCurve
-        if (onTimeCurveUpdateCb) onTimeCurveUpdateCb(pendingTimeCurve)
         pendingTimeCurve = null
       }
     })
@@ -143,16 +139,6 @@ export function useGA() {
     addLog('已重置', 'info')
   }
 
-  /** 注册路由数据更新回调（地图组件用） */
-  function onRouteUpdate(cb) {
-    onRouteUpdateCb = cb
-  }
-
-  /** 注册收敛曲线更新回调（图表组件用） */
-  function onTimeCurveUpdate(cb) {
-    onTimeCurveUpdateCb = cb
-  }
-
   return {
     gaState: state,
     startGA,
@@ -160,7 +146,5 @@ export function useGA() {
     resetGA,
     addLog,
     clearLogs,
-    onRouteUpdate,
-    onTimeCurveUpdate,
   }
 }

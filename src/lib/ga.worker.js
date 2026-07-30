@@ -41,8 +41,6 @@ class ProblemModel {
         this.truckCount = config.vehicles.trucks.count;
         this.truckCapacity = config.vehicles.trucks.capacity;
         this.truckSpeed = config.vehicles.trucks.speed;
-        this.truckCostPerKm = config.vehicles.trucks.costPerKm;
-        this.truckFixedCost = config.vehicles.trucks.fixedCost;
         this.truckRange = config.vehicles.trucks.range;
         this.dronesPerTruck = config.vehicles.trucks.dronesPerTruck;
 
@@ -50,9 +48,7 @@ class ProblemModel {
         this.droneRange = config.vehicles.drones.range;
         this.droneSpeed = config.vehicles.drones.speed;
         this.droneMaxPayload = config.vehicles.drones.maxPayload;
-        this.droneCostPerKm = config.vehicles.drones.costPerKm;
         this.droneRechargeTime = config.vehicles.drones.rechargeTime;
-        this.droneRechargeCost = config.vehicles.drones.rechargeCost;
         this.droneServiceTime = config.vehicles.drones.serviceTime;
 
         this.launchPointConfig = config.launchPoint;
@@ -62,10 +58,7 @@ class ProblemModel {
         this.timeWindowLate = config.penalty.timeWindowLate;
         this.droneRangePenalty = config.penalty.droneRangePenalty;
         this.dronePayloadPenalty = config.penalty.dronePayloadPenalty;
-        this.waitTimePenalty = config.penalty.waitTimePenalty;
-        this.delayTimePenalty = config.penalty.delayTimePenalty;
         this.truckRangeTimePenalty = config.penalty.truckRangeTimePenalty;
-        this.truckRangeDistancePenalty = config.penalty.truckRangeDistancePenalty;
         this.distancePenalty = config.penalty.distancePenalty;
 
         this.maxTime = config.normalization.maxTime;
